@@ -268,6 +268,9 @@ enchant.Class = function(superclass, definition) {
  [/lang]
  */
 enchant.Class.create = function(superclass, definition) {
+    if (superclass == null){
+        throw new Error("superclass is undefined");
+    }
     if (arguments.length === 0) {
         return enchant.Class.create(Object, definition);
     } else if (arguments.length === 1 && typeof arguments[0] !== 'function') {
@@ -304,7 +307,7 @@ enchant.Class.create = function(superclass, definition) {
 };
 /**
  [lang:ja]
- * 環境変数
+ * enchant.js の環境変数。new Game() を呼ぶ前に変更することで変更することで、動作設定を変えることができる。
  * @type {Object}
  [/lang]
  [lang:ja]
@@ -358,7 +361,7 @@ enchant.ENV = {
         }
     }()),
     /**
-     * Use Flash instead of native Audio class?
+     * Will Use Flash instead of native Audio class?
      * @type {String}
      */
     USE_FLASH_SOUND: (function() {
@@ -380,7 +383,11 @@ enchant.ENV = {
         39: 'right',
         40: 'down'
     },
-    PREVENT_DEFAULT_KEY_CODES: [37, 38, 39, 40, 32]
+    PREVENT_DEFAULT_KEY_CODES: [37, 38, 39, 40, 32],
+    /**
+     * @type {Boolean}
+     */
+    SOUND_ENABLED_ON_MOBILE_SAFARI: false
 };
 /**
  * @scope enchant.Event.prototype
@@ -4822,7 +4829,7 @@ enchant.Sound.load = function(src, type) {
     var sound = Object.create(enchant.Sound.prototype);
     enchant.EventTarget.call(sound);
     var audio = new Audio();
-    if (!enchant.Sound.enabledInMobileSafari &&
+    if (!enchant.ENV.SOUND_ENABLED_ON_MOBILE_SAFARI &&
         enchant.ENV.VENDOR_PREFIX === 'webkit' && enchant.ENV.TOUCH_ENABLED) {
         window.setTimeout(function() {
             sound.dispatchEvent(new enchant.Event('load'));
@@ -4881,5 +4888,3 @@ enchant.Sound.load = function(src, type) {
     }
     return sound;
 };
-
-enchant.Sound.enabledInMobileSafari = false;
